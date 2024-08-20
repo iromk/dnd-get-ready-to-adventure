@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table with Points Pool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .spinner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner input[type="number"] {
+            text-align: center;
+            width: 50px;
+            border: 1px solid #ccc;
+            border-radius: 0;
+            margin: 0 5px;
+        }
+        .spinner button {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            background-color: #f4f4f4;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .spinner button:focus {
+            outline: none;
+        }
+        #points-pool {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #d3f9d8; /* light green color for highlighting */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
+
+    <h1>Table with Spinner</h1>
+
+    <table>
+        <tr>
+            <th>Description</th>
+            <th>Value</th>
+            <th>Additional Info</th> <!-- New column header -->
+        </tr>
+        <tr id="row1">
+            <td>Item 1</td>
+            <td>
+                <div class="spinner">
+                    <button onclick="changeValue('value1', -1, 'row1')">-</button>
+                    <input type="number" id="value1" value="0" min="0" readonly>
+                    <button onclick="changeValue('value1', 1, 'row1')">+</button>
+                </div>
+            </td>
+            <td>Info 1</td> <!-- New column data -->
+        </tr>
+        <tr id="row2">
+            <td>Item 2</td>
+            <td>
+                <div class="spinner">
+                    <button onclick="changeValue('value2', -1, 'row2')">-</button>
+                    <input type="number" id="value2" value="0" min="0" readonly>
+                    <button onclick="changeValue('value2', 1, 'row2')">+</button>
+                </div>
+            </td>
+            <td>Info 2</td> <!-- New column data -->
+        </tr>
+        <tr id="row3">
+            <td>Item 3</td>
+            <td>
+                <div class="spinner">
+                    <button onclick="changeValue('value3', -1, 'row3')">-</button>
+                    <input type="number" id="value3" value="0" min="0" readonly>
+                    <button onclick="changeValue('value3', 1, 'row3')">+</button>
+                </div>
+            </td>
+            <td>Info 3</td> <!-- New column data -->
+        </tr>
+    </table>
+
+    <script>
+        let pointsPool = 32;
+
+        function changeValue(id, delta, rowId) {
+            const input = document.getElementById(id);
+            let currentValue = parseInt(input.value);
+            const newValue = currentValue + delta;
+
+            if (newValue >= parseInt(input.min) && (delta < 0 || pointsPool > 0)) {
+                input.value = newValue;
+
+                if (delta > 0) {
+                    pointsPool -= 1; // Decrease the points pool
+                } else if (delta < 0) {
+                    pointsPool += 1; // Increase the points pool
+                }
+
+                // Update points pool display
+                document.getElementById('pool-value').innerText = pointsPool;
+
+                // Highlight the row if the value is greater than 0
+                highlightRow(rowId, newValue);
+
+                // Disable increment buttons if pointsPool is 0
+                checkButtons();
+            }
+        }
+
+        function highlightRow(rowId, value) {
+            const row = document.getElementById(rowId);
+            if (value > 0) {
+                row.classList.add('highlight');
+            } else {
+                row.classList.remove('highlight');
+            }
+        }
+
+        function checkButtons() {
+            document.querySelectorAll('.spinner button').forEach(button => {
+                if (button.innerText === '+' && pointsPool <= 0) {
+                    button.disabled = true;
+                } else {
+                    button.disabled = false;
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
