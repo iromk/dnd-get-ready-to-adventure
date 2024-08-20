@@ -56,18 +56,18 @@
 </head>
 <body>
 
-    <div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
+    <h1>Get ready, Adventurer!</h1>
 
-    <h1>Table with Spinner</h1>
+    <div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
 
     <table>
         <tr>
-            <th>Description</th>
-            <th>Value</th>
-            <th>Additional Info</th> <!-- New column header -->
+            <th>Item</th>
+            <th>Buy</th>
+            <th>Condition</th>
         </tr>
         <tr id="row1">
-            <td>Item 1</td>
+            <td>Деньги, 10 зм</td>
             <td>
                 <div class="spinner">
                     <button onclick="changeValue('value1', -1, 'row1')">-</button>
@@ -75,10 +75,10 @@
                     <button onclick="changeValue('value1', 1, 'row1')">+</button>
                 </div>
             </td>
-            <td>Info 1</td> <!-- New column data -->
+            <td>-</td>
         </tr>
         <tr id="row2">
-            <td>Item 2</td>
+            <td>1 простое оружие</td>
             <td>
                 <div class="spinner">
                     <button onclick="changeValue('value2', -1, 'row2')">-</button>
@@ -86,10 +86,10 @@
                     <button onclick="changeValue('value2', 1, 'row2')">+</button>
                 </div>
             </td>
-            <td>Info 2</td> <!-- New column data -->
+            <td>-</td>
         </tr>
         <tr id="row3">
-            <td>Item 3</td>
+            <td>1 воинское оружие</td>
             <td>
                 <div class="spinner">
                     <button onclick="changeValue('value3', -1, 'row3')">-</button>
@@ -97,7 +97,7 @@
                     <button onclick="changeValue('value3', 1, 'row3')">+</button>
                 </div>
             </td>
-            <td>Info 3</td> <!-- New column data -->
+            <td>владение</td>
         </tr>
     </table>
 
