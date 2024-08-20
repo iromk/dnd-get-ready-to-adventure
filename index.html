@@ -10,7 +10,7 @@
             margin: 20px;
         }
         table {
-            width: 80%;
+            width: 90%;
             border-collapse: collapse;
             margin: 20px 0;
         }
@@ -63,42 +63,46 @@
 <table>
     <tr>
         <th>Item</th>
-        <th>Cost</th> <!-- New Cost column -->
+        <th>Cost</th>
+        <th>Max</th> <!-- New Max column -->
         <th>Buy</th>
         <th>Condition</th>
     </tr>
     <tr id="row1">
         <td>Деньги, 10 зм</td>
-        <td>5</td> <!-- Fixed cost value -->
+        <td>5</td>
+        <td>3</td> <!-- Maximum of 3 items can be bought -->
         <td>
             <div class="spinner">
-                <button onclick="changeValue('value1', -1, 'row1', 5)">-</button> <!-- Pass the cost as an argument -->
+                <button onclick="changeValue('value1', -1, 'row1', 5, 3)">-</button> <!-- Pass the max as an argument -->
                 <input type="number" id="value1" value="0" min="0" readonly>
-                <button onclick="changeValue('value1', 1, 'row1', 5)">+</button> <!-- Pass the cost as an argument -->
+                <button onclick="changeValue('value1', 1, 'row1', 5, 3)">+</button> <!-- Pass the max as an argument -->
             </div>
         </td>
         <td>-</td>
     </tr>
     <tr id="row2">
         <td>1 простое оружие</td>
-        <td>10</td> <!-- Fixed cost value -->
+        <td>10</td>
+        <td>1</td> <!-- Maximum of 1 item can be bought -->
         <td>
             <div class="spinner">
-                <button onclick="changeValue('value2', -1, 'row2', 10)">-</button> <!-- Pass the cost as an argument -->
+                <button onclick="changeValue('value2', -1, 'row2', 10, 1)">-</button> <!-- Pass the max as an argument -->
                 <input type="number" id="value2" value="0" min="0" readonly>
-                <button onclick="changeValue('value2', 1, 'row2', 10)">+</button> <!-- Pass the cost as an argument -->
+                <button onclick="changeValue('value2', 1, 'row2', 10, 1)">+</button> <!-- Pass the max as an argument -->
             </div>
         </td>
         <td>-</td>
     </tr>
     <tr id="row3">
         <td>1 воинское оружие</td>
-        <td>20</td> <!-- Fixed cost value -->
+        <td>20</td>
+        <td>2</td> <!-- Maximum of 2 items can be bought -->
         <td>
             <div class="spinner">
-                <button onclick="changeValue('value3', -1, 'row3', 20)">-</button> <!-- Pass the cost as an argument -->
+                <button onclick="changeValue('value3', -1, 'row3', 20, 2)">-</button> <!-- Pass the max as an argument -->
                 <input type="number" id="value3" value="0" min="0" readonly>
-                <button onclick="changeValue('value3', 1, 'row3', 20)">+</button> <!-- Pass the cost as an argument -->
+                <button onclick="changeValue('value3', 1, 'row3', 20, 2)">+</button> <!-- Pass the max as an argument -->
             </div>
         </td>
         <td>владение</td>
@@ -108,13 +112,13 @@
 <script>
     let pointsPool = 32;
 
-    function changeValue(id, delta, rowId, cost) {
+    function changeValue(id, delta, rowId, cost, max) {
         const input = document.getElementById(id);
         let currentValue = parseInt(input.value);
         const newValue = currentValue + delta;
 
-        // Check if the new value is valid and if incrementing won't exceed pointsPool
-        if (newValue >= parseInt(input.min) && (delta < 0 || pointsPool >= cost)) {
+        // Check if the new value is within the limits and if incrementing won't exceed pointsPool or max limit
+        if (newValue >= parseInt(input.min) && newValue <= max && (delta < 0 || pointsPool >= cost)) {
             input.value = newValue;
 
             if (delta > 0) {
@@ -129,7 +133,7 @@
             // Highlight the row if the value is greater than 0
             highlightRow(rowId, newValue);
 
-            // Disable increment buttons if pointsPool is less than the cost
+            // Disable increment buttons if pointsPool is less than the cost or if the max limit is reached
             checkButtons();
         }
     }
@@ -145,8 +149,12 @@
 
     function checkButtons() {
         document.querySelectorAll('.spinner button').forEach(button => {
-            const cost = parseInt(button.getAttribute('onclick').match(/, (\d+)\)/)[1]);
-            if (button.innerText === '+' && pointsPool < cost) {
+            const [id, delta, rowId, cost, max] = button.getAttribute('onclick').match(/'(\w+)', (-?\d+), '(\w+)', (\d+), (\d+)/).slice(1, 6);
+            const input = document.getElementById(id);
+            const currentValue = parseInt(input.value);
+
+            if ((button.innerText === '+' && (pointsPool < parseInt(cost) || currentValue >= parseInt(max))) ||
+                (button.innerText === '-' && currentValue <= 0)) {
                 button.disabled = true;
             } else {
                 button.disabled = false;
