@@ -67,6 +67,7 @@
 <!-- Buttons for Summary and Clear Summary -->
 <button onclick="generateSummary()">Summary</button>
 <button onclick="clearSummary()">Clear Summary</button>
+<button onclick="copySummaryToClipboard()">Copy Summary to Clipboard</button> <!-- New Button -->
 
 <table id="adventure-table">
     <tr>
@@ -86,9 +87,9 @@
 
     // Structured data list
     const dataList = [
-        { item: "Деньги, 10 зм", cost: 1, max: "-", condition: "-" },
-        { item: "1 простое оружие", cost: 1, max: 4, condition: "-" },
-        { item: "1 воинское оружие", cost: 2, max: 2, condition: "владение" },
+        { item: "Деньги, 10 зм", cost: 5, max: 3, condition: "-" },
+        { item: "1 простое оружие", cost: 10, max: 1, condition: "-" },
+        { item: "1 воинское оружие", cost: 20, max: "-", condition: "владение" },
         // Add more items here...
     ];
 
@@ -153,29 +154,8 @@
         checkButtons();
     }
 
-    // Updated checkButtons function
-    function checkButtons() {
-        document.querySelectorAll('.spinner button').forEach(button => {
-            const spinnerDiv = button.parentElement;
-            const input = spinnerDiv.querySelector('input');
-            const currentValue = parseInt(input.value);
-            const max = spinnerDiv.parentElement.previousElementSibling.textContent;
-            const cost = spinnerDiv.parentElement.previousElementSibling.previousElementSibling.textContent;
-
-            let maxLimit = (max === "-") ? Number.MAX_SAFE_INTEGER : parseInt(max);
-
-            if ((button.textContent === '+' && (pointsPool < parseInt(cost) || currentValue >= maxLimit)) ||
-                (button.textContent === '-' && currentValue <= 0)) {
-                button.disabled = true;
-            } else {
-                button.disabled = false;
-            }
-        });
-    }
-
     // Call the function to generate the table
     generateTable(dataList);
-
 
     function changeValue(id, delta, rowId, cost, max) {
         const input = document.getElementById(id);
@@ -215,6 +195,25 @@
         }
     }
 
+    function checkButtons() {
+        document.querySelectorAll('.spinner button').forEach(button => {
+            const spinnerDiv = button.parentElement;
+            const input = spinnerDiv.querySelector('input');
+            const currentValue = parseInt(input.value);
+            const max = spinnerDiv.parentElement.previousElementSibling.textContent;
+            const cost = spinnerDiv.parentElement.previousElementSibling.previousElementSibling.textContent;
+
+            let maxLimit = (max === "-") ? Number.MAX_SAFE_INTEGER : parseInt(max);
+
+            if ((button.textContent === '+' && (pointsPool < parseInt(cost) || currentValue >= maxLimit)) ||
+                (button.textContent === '-' && currentValue <= 0)) {
+                button.disabled = true;
+            } else {
+                button.disabled = false;
+            }
+        });
+    }
+
     // Function to generate the summary list
     function generateSummary() {
         const summaryList = document.getElementById('summary-list');
@@ -234,6 +233,28 @@
     function clearSummary() {
         const summaryList = document.getElementById('summary-list');
         summaryList.innerHTML = "";
+    }
+
+    // Function to copy the summary to clipboard
+    function copySummaryToClipboard() {
+        let summaryText = "";
+        dataList.forEach((data, index) => {
+            const input = document.getElementById(`value${index + 1}`);
+            const quantity = parseInt(input.value);
+            if (quantity > 0) {
+                summaryText += `${data.item}: ${quantity}\n`;
+            }
+        });
+
+        if (summaryText) {
+            navigator.clipboard.writeText(summaryText).then(() => {
+                alert("Summary copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy summary to clipboard: ", err);
+            });
+        } else {
+            alert("No items to copy to clipboard!");
+        }
     }
 </script>
 
