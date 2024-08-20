@@ -45,6 +45,9 @@
         .spinner button:focus {
             outline: none;
         }
+        .subTitle {
+            font-style: italic;
+        }
         #points-pool {
             font-size: 20px;
             margin-bottom: 20px;
@@ -87,9 +90,13 @@
 
     // Structured data list
     const dataList = [
+        { item: "базовые предметы", cost: null },
         { item: "Деньги, 10 зм", cost: 5, max: 3, condition: "-" },
         { item: "1 простое оружие", cost: 10, max: 1, condition: "-" },
         { item: "1 воинское оружие", cost: 20, max: "-", condition: "владение" },
+        { item: "зелья", cost: null },
+        { item: "магические предметы", cost: null },
+        { item: "для заклинателей", cost: null },
         // Add more items here...
     ];
 
@@ -98,6 +105,12 @@
         const table = document.getElementById("adventure-table");
         const row = document.createElement("tr");
         row.id = `row${index + 1}`;
+        if (data.cost === null) {
+            row.textContent = data.item;
+            row.classList.add("subTitle");
+            table.appendChild(row);
+            return
+        }
 
         // Create cells
         const itemCell = document.createElement("td");
@@ -220,6 +233,7 @@
         summaryList.innerHTML = ""; // Clear previous summary
         dataList.forEach((data, index) => {
             const input = document.getElementById(`value${index + 1}`);
+            if (input === null) return
             const quantity = parseInt(input.value);
             if (quantity > 0) {
                 const listItem = document.createElement('div');
@@ -240,6 +254,7 @@
         let summaryText = "";
         dataList.forEach((data, index) => {
             const input = document.getElementById(`value${index + 1}`);
+            if (input === null) return
             const quantity = parseInt(input.value);
             if (quantity > 0) {
                 summaryText += `${data.item}: ${quantity}\n`;
