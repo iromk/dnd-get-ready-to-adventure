@@ -75,10 +75,9 @@
 
     // Structured data list
     const dataList = [
-        { item: "Деньги, 10 зм", cost: 1, max: 1, condition: "-" },
-        { item: "1 простое оружие", cost: 1, max: 4, condition: "-" },
-        { item: "1 воинское оружие", cost: 2, max: 2, condition: "владение" },
-        { item: "2 комплекта боеприпасов", cost: 1, max: 2, condition: "владение" },
+        { item: "Деньги, 10 зм", cost: 5, max: "-", condition: "-" },
+        { item: "1 простое оружие", cost: 10, max: 1, condition: "-" },
+        { item: "1 воинское оружие", cost: 20, max: 1, condition: "владение" },
         // Add more items here...
     ];
 
@@ -146,11 +145,13 @@
     function changeValue(id, delta, rowId, cost, max) {
         const input = document.getElementById(id);
         let currentValue = parseInt(input.value);
-        const newValue = currentValue + delta;
+        let newValue = currentValue + delta;
 
-        if () max = pointsPool
+        // Convert max to a number if it's a digit, otherwise set it to a high value (effectively unlimited)
+        let maxLimit = (max === "-") ? Number.MAX_SAFE_INTEGER : parseInt(max);
+
         // Check if the new value is within the limits and if incrementing won't exceed pointsPool or max limit
-        if (newValue >= parseInt(input.min) && newValue <= max && (delta < 0 || pointsPool >= cost)) {
+        if (newValue >= parseInt(input.min) && newValue <= maxLimit && (delta < 0 || pointsPool >= cost)) {
             input.value = newValue;
 
             if (delta > 0) {
@@ -181,11 +182,13 @@
 
     function checkButtons() {
         document.querySelectorAll('.spinner button').forEach(button => {
-            const [id, delta, rowId, cost, max] = button.getAttribute('onclick').match(/'(\w+)', (-?\d+), '(\w+)', (\d+), (\d+)/).slice(1, 6);
+            const [id, delta, rowId, cost, max] = button.getAttribute('onclick').match(/'(\w+)', (-?\d+), '(\w+)', (\d+|-), (\d+|-)/).slice(1, 6);
             const input = document.getElementById(id);
             const currentValue = parseInt(input.value);
 
-            if ((button.innerText === '+' && (pointsPool < parseInt(cost) || currentValue >= parseInt(max))) ||
+            let maxLimit = (max === "-") ? Number.MAX_SAFE_INTEGER : parseInt(max);
+
+            if ((button.innerText === '+' && (pointsPool < parseInt(cost) || currentValue >= maxLimit)) ||
                 (button.innerText === '-' && currentValue <= 0)) {
                 button.disabled = true;
             } else {
