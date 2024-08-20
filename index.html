@@ -10,7 +10,7 @@
             margin: 20px;
         }
         table {
-            width: 60%;
+            width: 80%;
             border-collapse: collapse;
             margin: 20px 0;
         }
@@ -56,98 +56,104 @@
 </head>
 <body>
 
-    <h1>Get ready, Adventurer!</h1>
+<h1>Get ready, Adventurer!</h1>
 
-    <div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
+<div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
 
-    <table>
-        <tr>
-            <th>Item</th>
-            <th>Buy</th>
-            <th>Condition</th>
-        </tr>
-        <tr id="row1">
-            <td>Деньги, 10 зм</td>
-            <td>
-                <div class="spinner">
-                    <button onclick="changeValue('value1', -1, 'row1')">-</button>
-                    <input type="number" id="value1" value="0" min="0" readonly>
-                    <button onclick="changeValue('value1', 1, 'row1')">+</button>
-                </div>
-            </td>
-            <td>-</td>
-        </tr>
-        <tr id="row2">
-            <td>1 простое оружие</td>
-            <td>
-                <div class="spinner">
-                    <button onclick="changeValue('value2', -1, 'row2')">-</button>
-                    <input type="number" id="value2" value="0" min="0" readonly>
-                    <button onclick="changeValue('value2', 1, 'row2')">+</button>
-                </div>
-            </td>
-            <td>-</td>
-        </tr>
-        <tr id="row3">
-            <td>1 воинское оружие</td>
-            <td>
-                <div class="spinner">
-                    <button onclick="changeValue('value3', -1, 'row3')">-</button>
-                    <input type="number" id="value3" value="0" min="0" readonly>
-                    <button onclick="changeValue('value3', 1, 'row3')">+</button>
-                </div>
-            </td>
-            <td>владение</td>
-        </tr>
-    </table>
+<table>
+    <tr>
+        <th>Item</th>
+        <th>Cost</th> <!-- New Cost column -->
+        <th>Buy</th>
+        <th>Condition</th>
+    </tr>
+    <tr id="row1">
+        <td>Деньги, 10 зм</td>
+        <td>5</td> <!-- Fixed cost value -->
+        <td>
+            <div class="spinner">
+                <button onclick="changeValue('value1', -1, 'row1', 5)">-</button> <!-- Pass the cost as an argument -->
+                <input type="number" id="value1" value="0" min="0" readonly>
+                <button onclick="changeValue('value1', 1, 'row1', 5)">+</button> <!-- Pass the cost as an argument -->
+            </div>
+        </td>
+        <td>-</td>
+    </tr>
+    <tr id="row2">
+        <td>1 простое оружие</td>
+        <td>10</td> <!-- Fixed cost value -->
+        <td>
+            <div class="spinner">
+                <button onclick="changeValue('value2', -1, 'row2', 10)">-</button> <!-- Pass the cost as an argument -->
+                <input type="number" id="value2" value="0" min="0" readonly>
+                <button onclick="changeValue('value2', 1, 'row2', 10)">+</button> <!-- Pass the cost as an argument -->
+            </div>
+        </td>
+        <td>-</td>
+    </tr>
+    <tr id="row3">
+        <td>1 воинское оружие</td>
+        <td>20</td> <!-- Fixed cost value -->
+        <td>
+            <div class="spinner">
+                <button onclick="changeValue('value3', -1, 'row3', 20)">-</button> <!-- Pass the cost as an argument -->
+                <input type="number" id="value3" value="0" min="0" readonly>
+                <button onclick="changeValue('value3', 1, 'row3', 20)">+</button> <!-- Pass the cost as an argument -->
+            </div>
+        </td>
+        <td>владение</td>
+    </tr>
+</table>
 
-    <script>
-        let pointsPool = 32;
+<script>
+    let pointsPool = 32;
 
-        function changeValue(id, delta, rowId) {
-            const input = document.getElementById(id);
-            let currentValue = parseInt(input.value);
-            const newValue = currentValue + delta;
+    function changeValue(id, delta, rowId, cost) {
+        const input = document.getElementById(id);
+        let currentValue = parseInt(input.value);
+        const newValue = currentValue + delta;
 
-            if (newValue >= parseInt(input.min) && (delta < 0 || pointsPool > 0)) {
-                input.value = newValue;
+        // Check if the new value is valid and if incrementing won't exceed pointsPool
+        if (newValue >= parseInt(input.min) && (delta < 0 || pointsPool >= cost)) {
+            input.value = newValue;
 
-                if (delta > 0) {
-                    pointsPool -= 1; // Decrease the points pool
-                } else if (delta < 0) {
-                    pointsPool += 1; // Increase the points pool
-                }
-
-                // Update points pool display
-                document.getElementById('pool-value').innerText = pointsPool;
-
-                // Highlight the row if the value is greater than 0
-                highlightRow(rowId, newValue);
-
-                // Disable increment buttons if pointsPool is 0
-                checkButtons();
+            if (delta > 0) {
+                pointsPool -= cost; // Decrease the points pool by the cost
+            } else if (delta < 0) {
+                pointsPool += cost; // Increase the points pool by the cost
             }
-        }
 
-        function highlightRow(rowId, value) {
-            const row = document.getElementById(rowId);
-            if (value > 0) {
-                row.classList.add('highlight');
+            // Update points pool display
+            document.getElementById('pool-value').innerText = pointsPool;
+
+            // Highlight the row if the value is greater than 0
+            highlightRow(rowId, newValue);
+
+            // Disable increment buttons if pointsPool is less than the cost
+            checkButtons();
+        }
+    }
+
+    function highlightRow(rowId, value) {
+        const row = document.getElementById(rowId);
+        if (value > 0) {
+            row.classList.add('highlight');
+        } else {
+            row.classList.remove('highlight');
+        }
+    }
+
+    function checkButtons() {
+        document.querySelectorAll('.spinner button').forEach(button => {
+            const cost = parseInt(button.getAttribute('onclick').match(/, (\d+)\)/)[1]);
+            if (button.innerText === '+' && pointsPool < cost) {
+                button.disabled = true;
             } else {
-                row.classList.remove('highlight');
+                button.disabled = false;
             }
-        }
-
-        function checkButtons() {
-            document.querySelectorAll('.spinner button').forEach(button => {
-                if (button.innerText === '+' && pointsPool <= 0) {
-                    button.disabled = true;
-                } else {
-                    button.disabled = false;
-                }
-            });
-        }
-    </script>
+        });
+    }
+</script>
 
 </body>
 </html>
