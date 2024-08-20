@@ -86,9 +86,9 @@
 
     // Structured data list
     const dataList = [
-        { item: "Деньги, 10 зм", cost: 5, max: 3, condition: "-" },
-        { item: "1 простое оружие", cost: 10, max: 1, condition: "-" },
-        { item: "1 воинское оружие", cost: 20, max: "-", condition: "владение" },
+        { item: "Деньги, 10 зм", cost: 1, max: "-", condition: "-" },
+        { item: "1 простое оружие", cost: 1, max: 4, condition: "-" },
+        { item: "1 воинское оружие", cost: 2, max: 2, condition: "владение" },
         // Add more items here...
     ];
 
@@ -117,7 +117,7 @@
 
         const minusButton = document.createElement("button");
         minusButton.textContent = "-";
-        minusButton.onclick = () => changeValue(`value${index + 1}`, -1, `row${index + 1}`, data.cost, data.max);
+        minusButton.addEventListener("click", () => changeValue(`value${index + 1}`, -1, `row${index + 1}`, data.cost, data.max));
         spinnerDiv.appendChild(minusButton);
 
         const inputField = document.createElement("input");
@@ -130,7 +130,7 @@
 
         const plusButton = document.createElement("button");
         plusButton.textContent = "+";
-        plusButton.onclick = () => changeValue(`value${index + 1}`, 1, `row${index + 1}`, data.cost, data.max);
+        plusButton.addEventListener("click", () => changeValue(`value${index + 1}`, 1, `row${index + 1}`, data.cost, data.max));
         spinnerDiv.appendChild(plusButton);
 
         buyCell.appendChild(spinnerDiv);
@@ -148,10 +148,34 @@
         dataList.forEach((data, index) => {
             createRow(data, index);
         });
+
+        // Check the buttons after table generation
+        checkButtons();
+    }
+
+    // Updated checkButtons function
+    function checkButtons() {
+        document.querySelectorAll('.spinner button').forEach(button => {
+            const spinnerDiv = button.parentElement;
+            const input = spinnerDiv.querySelector('input');
+            const currentValue = parseInt(input.value);
+            const max = spinnerDiv.parentElement.previousElementSibling.textContent;
+            const cost = spinnerDiv.parentElement.previousElementSibling.previousElementSibling.textContent;
+
+            let maxLimit = (max === "-") ? Number.MAX_SAFE_INTEGER : parseInt(max);
+
+            if ((button.textContent === '+' && (pointsPool < parseInt(cost) || currentValue >= maxLimit)) ||
+                (button.textContent === '-' && currentValue <= 0)) {
+                button.disabled = true;
+            } else {
+                button.disabled = false;
+            }
+        });
     }
 
     // Call the function to generate the table
     generateTable(dataList);
+
 
     function changeValue(id, delta, rowId, cost, max) {
         const input = document.getElementById(id);
@@ -189,23 +213,6 @@
         } else {
             row.classList.remove('highlight');
         }
-    }
-
-    function checkButtons() {
-        document.querySelectorAll('.spinner button').forEach(button => {
-            const [id, delta, rowId, cost, max] = button.getAttribute('onclick').match(/'(\w+)', (-?\d+), '(\w+)', (\d+|-), (\d+|-)/).slice(1, 6);
-            const input = document.getElementById(id);
-            const currentValue = parseInt(input.value);
-
-            let maxLimit = (max === "-") ? Number.MAX_SAFE_INTEGER : parseInt(max);
-
-            if ((button.innerText === '+' && (pointsPool < parseInt(cost) || currentValue >= maxLimit)) ||
-                (button.innerText === '-' && currentValue <= 0)) {
-                button.disabled = true;
-            } else {
-                button.disabled = false;
-            }
-        });
     }
 
     // Function to generate the summary list
