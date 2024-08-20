@@ -52,6 +52,10 @@
         .highlight {
             background-color: #d3f9d8; /* light green color for highlighting */
         }
+        #summary-list {
+            margin-top: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -59,6 +63,10 @@
 <h1>Get ready, Adventurer!</h1>
 
 <div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
+
+<!-- Buttons for Summary and Clear Summary -->
+<button onclick="generateSummary()">Summary</button>
+<button onclick="clearSummary()">Clear Summary</button>
 
 <table id="adventure-table">
     <tr>
@@ -70,14 +78,17 @@
     </tr>
 </table>
 
+<!-- Placeholder for the summary list -->
+<div id="summary-list"></div>
+
 <script>
     let pointsPool = 32;
 
     // Structured data list
     const dataList = [
-        { item: "Деньги, 10 зм", cost: 5, max: "-", condition: "-" },
+        { item: "Деньги, 10 зм", cost: 5, max: 3, condition: "-" },
         { item: "1 простое оружие", cost: 10, max: 1, condition: "-" },
-        { item: "1 воинское оружие", cost: 20, max: 1, condition: "владение" },
+        { item: "1 воинское оружие", cost: 20, max: "-", condition: "владение" },
         // Add more items here...
     ];
 
@@ -195,6 +206,27 @@
                 button.disabled = false;
             }
         });
+    }
+
+    // Function to generate the summary list
+    function generateSummary() {
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = ""; // Clear previous summary
+        dataList.forEach((data, index) => {
+            const input = document.getElementById(`value${index + 1}`);
+            const quantity = parseInt(input.value);
+            if (quantity > 0) {
+                const listItem = document.createElement('div');
+                listItem.textContent = `${data.item}: ${quantity}`;
+                summaryList.appendChild(listItem);
+            }
+        });
+    }
+
+    // Function to clear the summary list
+    function clearSummary() {
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = "";
     }
 </script>
 
