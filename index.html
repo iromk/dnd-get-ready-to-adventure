@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Table with Points Pool</title>
+    <title>Dynamic Table with Points Pool</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,63 +60,95 @@
 
 <div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
 
-<table>
+<table id="adventure-table">
     <tr>
         <th>Item</th>
         <th>Cost</th>
-        <th>Max</th> <!-- New Max column -->
+        <th>Max</th>
         <th>Buy</th>
         <th>Condition</th>
-    </tr>
-    <tr id="row1">
-        <td>Деньги, 10 зм</td>
-        <td>5</td>
-        <td>3</td> <!-- Maximum of 3 items can be bought -->
-        <td>
-            <div class="spinner">
-                <button onclick="changeValue('value1', -1, 'row1', 5, 3)">-</button> <!-- Pass the max as an argument -->
-                <input type="number" id="value1" value="0" min="0" readonly>
-                <button onclick="changeValue('value1', 1, 'row1', 5, 3)">+</button> <!-- Pass the max as an argument -->
-            </div>
-        </td>
-        <td>-</td>
-    </tr>
-    <tr id="row2">
-        <td>1 простое оружие</td>
-        <td>10</td>
-        <td>1</td> <!-- Maximum of 1 item can be bought -->
-        <td>
-            <div class="spinner">
-                <button onclick="changeValue('value2', -1, 'row2', 10, 1)">-</button> <!-- Pass the max as an argument -->
-                <input type="number" id="value2" value="0" min="0" readonly>
-                <button onclick="changeValue('value2', 1, 'row2', 10, 1)">+</button> <!-- Pass the max as an argument -->
-            </div>
-        </td>
-        <td>-</td>
-    </tr>
-    <tr id="row3">
-        <td>1 воинское оружие</td>
-        <td>20</td>
-        <td>2</td> <!-- Maximum of 2 items can be bought -->
-        <td>
-            <div class="spinner">
-                <button onclick="changeValue('value3', -1, 'row3', 20, 2)">-</button> <!-- Pass the max as an argument -->
-                <input type="number" id="value3" value="0" min="0" readonly>
-                <button onclick="changeValue('value3', 1, 'row3', 20, 2)">+</button> <!-- Pass the max as an argument -->
-            </div>
-        </td>
-        <td>владение</td>
     </tr>
 </table>
 
 <script>
     let pointsPool = 32;
 
+    // Structured data list
+    const dataList = [
+        { item: "Деньги, 10 зм", cost: 1, max: 1, condition: "-" },
+        { item: "1 простое оружие", cost: 1, max: 4, condition: "-" },
+        { item: "1 воинское оружие", cost: 2, max: 2, condition: "владение" },
+        { item: "2 комплекта боеприпасов", cost: 1, max: 2, condition: "владение" },
+        // Add more items here...
+    ];
+
+    // Function to create a table row
+    function createRow(data, index) {
+        const table = document.getElementById("adventure-table");
+        const row = document.createElement("tr");
+        row.id = `row${index + 1}`;
+
+        // Create cells
+        const itemCell = document.createElement("td");
+        itemCell.textContent = data.item;
+        row.appendChild(itemCell);
+
+        const costCell = document.createElement("td");
+        costCell.textContent = data.cost;
+        row.appendChild(costCell);
+
+        const maxCell = document.createElement("td");
+        maxCell.textContent = data.max;
+        row.appendChild(maxCell);
+
+        const buyCell = document.createElement("td");
+        const spinnerDiv = document.createElement("div");
+        spinnerDiv.classList.add("spinner");
+
+        const minusButton = document.createElement("button");
+        minusButton.textContent = "-";
+        minusButton.onclick = () => changeValue(`value${index + 1}`, -1, `row${index + 1}`, data.cost, data.max);
+        spinnerDiv.appendChild(minusButton);
+
+        const inputField = document.createElement("input");
+        inputField.type = "number";
+        inputField.id = `value${index + 1}`;
+        inputField.value = 0;
+        inputField.min = 0;
+        inputField.readOnly = true;
+        spinnerDiv.appendChild(inputField);
+
+        const plusButton = document.createElement("button");
+        plusButton.textContent = "+";
+        plusButton.onclick = () => changeValue(`value${index + 1}`, 1, `row${index + 1}`, data.cost, data.max);
+        spinnerDiv.appendChild(plusButton);
+
+        buyCell.appendChild(spinnerDiv);
+        row.appendChild(buyCell);
+
+        const conditionCell = document.createElement("td");
+        conditionCell.textContent = data.condition;
+        row.appendChild(conditionCell);
+
+        table.appendChild(row);
+    }
+
+    // Function to generate the table
+    function generateTable(dataList) {
+        dataList.forEach((data, index) => {
+            createRow(data, index);
+        });
+    }
+
+    // Call the function to generate the table
+    generateTable(dataList);
+
     function changeValue(id, delta, rowId, cost, max) {
         const input = document.getElementById(id);
         let currentValue = parseInt(input.value);
         const newValue = currentValue + delta;
 
+        if () max = pointsPool
         // Check if the new value is within the limits and if incrementing won't exceed pointsPool or max limit
         if (newValue >= parseInt(input.min) && newValue <= max && (delta < 0 || pointsPool >= cost)) {
             input.value = newValue;
