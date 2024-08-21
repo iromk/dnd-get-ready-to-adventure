@@ -47,6 +47,24 @@
         }
         .subTitle {
             font-style: italic;
+            padding-top: 32px;
+        }
+        tr.subTitle {
+            height: 32px;
+            vert-align: bottom;
+        }
+        .conditionCell {
+            text-align: start;
+            font-style: italic;
+        }
+        .itemCell {
+            text-align: start;
+        }
+        .maxCell {
+
+        }
+        .costCell {
+
         }
         #points-pool {
             font-size: 20px;
@@ -65,7 +83,7 @@
 
 <h1>Get ready, Adventurer!</h1>
 
-<div id="points-pool">Points Pool: <span id="pool-value">32</span></div>
+<div id="points-pool">Points Pool: <span id="pool-value">25</span></div>
 
 <!-- Buttons for Summary and Clear Summary -->
 <button onclick="generateSummary()">Summary</button>
@@ -86,18 +104,40 @@
 <div id="summary-list"></div>
 
 <script>
-    let pointsPool = 32;
+    let pointsPool = 25;
 
     // Structured data list
     const dataList = [
-        { item: "базовые предметы", cost: null },
-        { item: "Деньги, 10 зм", cost: 5, max: 3, condition: "-" },
-        { item: "1 простое оружие", cost: 10, max: 1, condition: "-" },
-        { item: "1 воинское оружие", cost: 20, max: "-", condition: "владение" },
+        { item: "дополнительные базовые предметы", cost: null },
+        { item: "деньги, 12 зм", cost: 1, max: "-", condition: "-" },
+        { item: "1 простое оружие", cost: 1, max: 4, condition: "-" },
+        { item: "1 воинское оружие", cost: 2, max: 2, condition: "владение" },
+        { item: "2 комплекта боеприпасов", cost: 1, max: "-", condition: "дальнобойное оружие" },
+        { item: "легкий  доспех", cost: 1, max: 1, condition: "владение" },
+        { item: "средний доспех", cost: 2, max: 1, condition: "владение" },
+        { item: "тяжелый  доспех", cost: 4, max: 1, condition: "владение" },
+        { item: "щит", cost: 2, max: 1, condition: "владение" },
+        { item: "дневной рацион, 5 шт", cost: 1, max: "-", condition: "-" },
+        { item: "набор инструментов", cost: 4, max: 1, condition: "-" },
         { item: "зелья", cost: null },
+        { item: "зелье лечения, <i>2d4+2</i>", cost: 1, max: 4, condition: "-" },
+        { item: "обычное зелье", cost: 2, max: 4, condition: "-" },
+        { item: "необычное зелье", cost: 6, max: 2, condition: "-" },
         { item: "магические предметы", cost: null },
+        { item: "обычный магический предмет", cost: 2, max: 2, condition: "-" },
+        { item: "необычный магический предмет", cost: 6, max: 2, condition: "-" },
         { item: "для заклинателей", cost: null },
-        // Add more items here...
+        { item: "свиток заговора", cost: 1, max: 6, condition: "из списка заклинаний класса" },
+        { item: "свиток заклинания 1 уровня", cost: 1, max: 4, condition: "из списка заклинаний класса" },
+        { item: "свиток заклинания 2 уровня", cost: 2, max: 4, condition: "из списка заклинаний класса" },
+        { item: "свиток заклинания 3 уровня", cost: 4, max: 3, condition: "из списка заклинаний класса" },
+        { item: "свиток заклинания 4 уровня", cost: 6, max: 3, condition: "из списка заклинаний класса" },
+        { item: "расходуемые материальные компоненты на сумму 500 зм", cost: 4, max: 2, condition: "-" },
+        { item: "молитвенник до 1 круга", cost: 8, max: 1, condition: "жрец, паладин" },
+        { item: "молитвенник до 2 круга", cost: 14, max: 1, condition: "жрец, паладин" },
+        { item: "молитвенник до 3 круга", cost: 20, max: 1, condition: "жрец, паладин" },
+
+
     ];
 
     // Function to create a table row
@@ -106,7 +146,7 @@
         const row = document.createElement("tr");
         row.id = `row${index + 1}`;
         if (data.cost === null) {
-            row.textContent = data.item;
+            row.innerHTML = '<br/>' + data.item;
             row.classList.add("subTitle");
             table.appendChild(row);
             return
@@ -114,14 +154,17 @@
 
         // Create cells
         const itemCell = document.createElement("td");
-        itemCell.textContent = data.item;
+        itemCell.classList.add("itemCell");
+        itemCell.innerHTML = data.item;
         row.appendChild(itemCell);
 
         const costCell = document.createElement("td");
+        costCell.classList.add("costCell");
         costCell.textContent = data.cost;
         row.appendChild(costCell);
 
         const maxCell = document.createElement("td");
+        maxCell.classList.add("maxCell");
         maxCell.textContent = data.max;
         row.appendChild(maxCell);
 
@@ -151,6 +194,7 @@
         row.appendChild(buyCell);
 
         const conditionCell = document.createElement("td");
+        conditionCell.classList.add("conditionCell");
         conditionCell.textContent = data.condition;
         row.appendChild(conditionCell);
 
